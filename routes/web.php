@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -19,9 +21,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/login', [UserController::class, 'login'])->name('login');
 
@@ -33,4 +33,14 @@ Route::post('/register', [UserController::class, 'registerPost'])->name('registe
 
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
+Route::get('/details', [UserController::class, 'userDetails'])->name('details');
+
 Route::get('/products', [ProductController::class,'getProducts'])->name('products');
+
+Route::post('/cart/add/{productId}', [CartController::class, 'addCartItem'])->name('cart.post');
+
+Route::get('/cart', [CartController::class, 'getCart'])->name('cart.show');
+
+Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('clearCart');
+
+Route::post('/checkout', [CartController::class, 'checkout'])->name('checkout');
