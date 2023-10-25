@@ -44,3 +44,5 @@ Route::get('/cart', [CartController::class, 'getCart'])->name('cart.show');
 Route::post('/cart/clear', [CartController::class, 'clearCart'])->name('clearCart');
 
 Route::post('/checkout', [CartController::class, 'checkout'])->name('checkout');
+
+Route::post('/discount', [DiscountController::class, 'applyDiscount'])->name('discount');
