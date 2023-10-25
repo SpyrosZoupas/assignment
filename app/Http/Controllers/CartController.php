@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateDiscountCode;
 use App\Models\Discount;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -141,8 +142,7 @@ class CartController extends Controller
             Session::forget($userId . 'cart');
             Session::forget('discount');
 
-            //todo job
-            //GenerateDiscountCode::dispatch()->delay(now()->addMinutes(15));
+            GenerateDiscountCode::dispatch()->delay(now()->addMinutes(15));
 
             DB::commit();
     
