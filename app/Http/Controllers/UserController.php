@@ -61,4 +61,9 @@ class UserController extends Controller
 
         return redirect(route('login'))->with("error", "Login details incorrect!");
     }
+
+    public function logout() {
+        Auth::logout();
+        return redirect(route('home'));
+    }
 }
