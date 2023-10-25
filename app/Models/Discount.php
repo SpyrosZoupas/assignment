@@ -14,4 +14,8 @@ class Discount extends Model
         'price',
         'used',
     ];
+
+    public function order() {
+        return $this->hasOne(Order::class);
+    }
 }
