@@ -90,4 +90,67 @@ class CartController extends Controller
 
         return view('cart.cart', ['cartItems' => $cartItems, 'totalPrice' => $totalPrice, 'discount' => $discount]);
     }
+
+    public function clearCart()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $userId = $user->id;
+        } else {
+            $userId = 'guest';
+        }
+
+        Session::forget($userId . 'cart');
+
+        return redirect()->route('cart.show')->with('success', 'Cart cleared successfully.');
+    }
+    
+    public function checkout()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $userId = $user->id;
+        } else {
+            return redirect()->route('registration')->with('success', 'Please register first.');
+        }
+    
+        $cart = Session::get($userId . 'cart', []);
+    
+        try {
+            DB::beginTransaction();
+    
+            $order = new Order();
+            $order->user_id = $userId;
+            $order->save();
+    
+            foreach ($cart as $item) {
+                $orderItem = new OrderItem();
+                $orderItem->product_id = $item['product_id'];
+                $orderItem->quantity = $item['quantity'];
+                $orderItem->order_id = $order->id;
+                $orderItem->save();
+            }
+
+            $discountCode = Session::get('discountCode');
+            if ($discountCode) {
+                $order->discount_id = Session::get('discountId');
+                $order->save();
+                Discount::where('discountCode', $discountCode)->update(['used' => 1]);
+            }
+            
+            Session::forget($userId . 'cart');
+            Session::forget('discount');
+
+            //todo job
+            //GenerateDiscountCode::dispatch()->delay(now()->addMinutes(15));
+
+            DB::commit();
+    
+            return redirect()->route('cart.show')->with('success', 'Checkout successful.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->route('cart.show')->with('error', 'Checkout failed. Please try again.');
+        }
+    }
 }
