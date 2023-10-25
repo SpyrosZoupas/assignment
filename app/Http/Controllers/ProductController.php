@@ -11,6 +11,6 @@ class ProductController extends Controller
     public function getProducts() {
         $products = Product::all();
 
-        return view('products', ['products'=> $products]);
+        return view('product.products', ['products'=> $products]);
     }
 }
